@@ -30,6 +30,10 @@ class Board
     !taken? index
   end
 
+  def avaliable_moves
+    ('1'..'9').select { |index| valid_move? index }
+  end
+
   def turn_count
     cells.size - cells.count(EMPTY_CELL)
   end
