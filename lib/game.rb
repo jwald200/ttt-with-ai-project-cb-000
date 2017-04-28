@@ -20,18 +20,17 @@ class Game
 
   def play
     turn until over?
-
-    puts won? ? "Congratulations #{winner}!" : "Cat\'s Game!"
+    display_game_outcome
   end
 
   def turn
-    loop do
+    position = ''
+
+    until board.valid_move?(position) do
       position = current_player.move
-      if board.valid_move?(position)
-        board.update(position, current_player)
-        break
-      end
     end
+
+    board.update(position, current_player)
   end
 
   def current_player
@@ -39,13 +38,7 @@ class Game
   end
 
   def winner
-    WIN_COMBINATIONS.each do |combo|
-      row_values = board.cells.values_at(*combo)
-
-      return row_values.first if winning_row?(row_values)
-    end
-
-    nil
+    @winner ||= search_winner
   end
 
   def over?
@@ -60,7 +53,23 @@ class Game
     board.full? && !won?
   end
 
+  private
+
   def winning_row?(row)
     row.uniq.one? && row.first != Board::EMPTY_CELL
+  end
+
+  def search_winner
+    WIN_COMBINATIONS.each do |combo|
+      row_values = board.cells.values_at(*combo)
+
+      return row_values.first if winning_row?(row_values)
+    end
+
+    nil
+  end
+
+  def display_game_outcome
+    puts won? ? "Congratulations #{winner}!" : "Cat\'s Game!"
   end
 end
